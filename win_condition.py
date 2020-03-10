@@ -1,13 +1,17 @@
+# TODO make it not print win positions twice
 def has_won(list_grid):
     # Check Cols
     if list_grid[0] == "X" and list_grid[1] == "X" and list_grid[2] == "X" or \
             list_grid[0] == "O" and list_grid[1] == "O" and list_grid[2] == "O":
+        print("0, 1, 2 are the win positions")
         return True
     elif list_grid[3] == "X" and list_grid[4] == "X" and list_grid[5] == "X" or \
             list_grid[3] == "O" and list_grid[4] == "O" and list_grid[5] == "O":
+        print("3, 4, 5 are the win positions")
         return True
     elif list_grid[6] == "X" and list_grid[7] == "X" and list_grid[8] == "X" or \
             list_grid[6] == "O" and list_grid[7] == "O" and list_grid[8] == "O":
+        print("6, 7, 8 are the win positions")
         return True
 
     # Check Rows
@@ -30,6 +34,3 @@ def has_won(list_grid):
     elif list_grid[2] == "X" and list_grid[4] == "X" and list_grid[6] == "X" or \
             list_grid[2] == "O" and list_grid[4] == "O" and list_grid[6] == "O":
         return True
-
-    else:
-        return None

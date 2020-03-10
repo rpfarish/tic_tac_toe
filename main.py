@@ -1,5 +1,8 @@
 import win_condition as win
+
 import random
+
+
 # Task list
 
 # This is only a user vs rand comp
@@ -69,26 +72,27 @@ class Hashtag:
 # Setup
 b1 = Hashtag(is_x_turn=True)
 
+while not win.has_won(b1.board) and 10 in b1.num_list:
 
-while not win.has_won(b1.board) and "10" not in b1.num_list:
-    var1 = input("Enter here: ")
-    # var1 = random.randint(0, 9)
-    # var1 = str(var1)
+    print(b1.num_list)
+    # var1 = input("Enter here: ")
+    var1 = random.randint(0, 9)
+    var1 = str(var1)
     while not var1.isdecimal():
-        var1 = input("Enter here: ")
-        # var1 = random.randint(0, 9)
-        # var1 = str(var1)
+        # var1 = input("Enter here: ")
+        var1 = random.randint(0, 9)
+        var1 = str(var1)
     var1 = int(var1)
     if 0 <= var1 <= 8:
         b1.write_board(var1)
         b1.display_board()
-if b1.num_of_turns == 8:
-    print("It was a tie.")
+
+if 10 not in b1.num_list and not win.has_won(b1.board):
+    print("it's a tie")
 elif b1.is_x_turn:
     print("Yay O won!")
 elif not b1.is_x_turn:
     print("Yay X won!")
-
 
 # Print empty board and tell user the number layout
 # choose which player goes first and what piece they are
