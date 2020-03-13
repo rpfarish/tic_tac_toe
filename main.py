@@ -1,6 +1,7 @@
 # Imports the random module
 import random
 
+
 # TODO Add move blocking for AI
 
 
@@ -55,7 +56,10 @@ def start(player_1=0, player_2=1):
     # create board object
     class Hashtag:
         def __init__(self, is_x_turn=None, board=None):
+            """This is the docString for the class Hashtag.
+            list of all funcs inside me"""
             # TODO create a docString
+            # TODO make is_x_turn independent of comp and user
 
             # Keeps track of if a piece has been placed at a position
             self.move_list = [10] * 9
@@ -103,6 +107,7 @@ def start(player_1=0, player_2=1):
                 if not self.is_x_turn:
                     self.board[index] = "O"
                 self.take_turn()
+            # FIxME
 
         def display_board(self):
             return print(f"""
@@ -137,27 +142,23 @@ def start(player_1=0, player_2=1):
     b2.example_board()
 
     # make available list
-    def best_move(avail, board, who):
-        if who == 'O':
-            for i in avail:
-                new_board = board[:]
-                new_board[i] = 'O'
-                good = has_won(new_board)
-                # do the move
-                if good:
-                    return str(i + 1)
-            else:
-                return -1
-        elif who == 'X':
-            for i in avail:
-                new_board = board[:]
-                new_board[i] = 'X'
-                good = has_won(new_board)
-                # do the move
-                if good:
-                    return str(i + 1)
-            else:
-                return -1
+    def best_move(avail, board_li, who):
+        """If there are two pieces in a row it returns the winning move,
+        else returns -1
+        :param board_li: list
+        :param avail: all the available positions to play
+        :param who: str either X or O
+        """
+        for i in avail:
+            new_board = board_li[:]
+            new_board[i] = who
+            good = has_won(new_board)
+            # do the move
+            if good:
+                return str(i + 1)
+        else:
+            return -1
+
     #         The stop move func
 
     # b2.display_board()
@@ -184,8 +185,7 @@ def start(player_1=0, player_2=1):
                 var1 = str(var1)
             elif player_1 == 3:
                 hi = b1.valid_move_list()
-                board = b1.board[:]
-                gold = best_move(hi, board, 'X')
+                gold = best_move(hi, b1.board, 'X')
                 if gold != -1:
                     var1 = str(gold)
                 else:
@@ -216,8 +216,7 @@ def start(player_1=0, player_2=1):
                 var2 = str(random.randint(0, 9))
             elif player_2 == 3:
                 hi = b1.valid_move_list()
-                board = b1.board[:]
-                gold = best_move(hi, board, 'O')
+                gold = best_move(hi, b1.board, 'O')
                 if gold != -1:
                     var2 = gold
                 else:
@@ -231,9 +230,6 @@ def start(player_1=0, player_2=1):
                     var2 = input("Enter your move here: ")
                 elif player_2 == 1:
                     var2 = str(random.randint(0, 9))
-                elif player_2 == 2:
-                    var2 = best_move()
-            #         Repeat code?
             var2 = int(var2)
             if 1 <= var2 <= 9:
                 var2 -= 1
@@ -244,6 +240,7 @@ def start(player_1=0, player_2=1):
     # Checks what type the end game was and then prints it
     if 10 not in b1.move_list and not has_won(b1.board):
         print("it's a tie")
+    #     Print who won to a text file
     elif b1.is_x_turn:
         print("Yay O won!")
     elif not b1.is_x_turn:
@@ -254,11 +251,13 @@ def start(player_1=0, player_2=1):
 
 # TODO choose which player goes first and what piece they are
 def init_func_game(other=False):
+    global thnx
+
     def ip_func(init_the_game):
         if init_the_game == '':
             pass
         elif init_the_game == 'n' or init_the_game == 'no' or init_the_game == 'quit' \
-                or init_the_game == 'nope':
+                or init_the_game == 'nope' or init_the_game[0] == 'n':
             quit()
         mode = input("Enter Option Number 1-9:\n\t1:Human vs Computer AI\n"
                      "\t2:Human vs Computer Random.\n"
@@ -267,7 +266,10 @@ def init_func_game(other=False):
                      "\t6:Computer Random vs Computer AI\n"
                      "\t7:Computer AI vs Computer Random\n"
                      "\t8:Computer AI vs Computer AI\n"
-                     "\t9:Computer Random vs Computer Random\n>")
+                     "\t9:Computer Random vs Computer Random\n\n>")
+        return mode
+
+    def start_mode(mode):
         # 0:Human 1:Comp Rand 3:Comp AI
         if mode == '1':
             start(0, 3)
@@ -292,13 +294,18 @@ def init_func_game(other=False):
         # ask user if they want to play again: later
         init_game = input('Do you want to play a game?\n> ')
         init_game = init_game.lower()
-        # TODO filter input
-        ip_func(init_game)
+        thnx = ip_func(init_game)
+        start_mode(thnx)
     if other:
+        # TODO make it remember your mode
         # ask user if they want to play again: later
-        init_game = input('Do you want to play again?\n>')
-        init_game = init_game.lower()
-        ip_func(init_game)
+        init_the_game = input('Do you want to play again?\n>')
+        if init_the_game == '':
+            pass
+        elif init_the_game == 'n' or init_the_game == 'no' or init_the_game == 'quit' \
+                or init_the_game == 'nope' or init_the_game[0] == 'n':
+            quit()
+        start_mode(thnx)
 
 
 init_func_game()
