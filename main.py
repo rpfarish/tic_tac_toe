@@ -11,7 +11,7 @@ def start(player_1=0, player_2=1):
         """Checks if Cols, Rows or Diagonal is occupied by either a X or an O
         :param list_grid type list
         :returns if there is a win and who won :return bool"""
-
+        # TODO Try and reduce func
         # Check Cols X
         if list_grid[0] == "X" and list_grid[1] == "X" and list_grid[2] == "X":
             return True, True
@@ -149,6 +149,8 @@ def start(player_1=0, player_2=1):
         :param avail: all the available positions to play
         :param who: str either X or O
         """
+        print(f"print avail'{avail}'")
+
         for i in avail:
             new_board = board_li[:]
             new_board[i] = who
@@ -156,6 +158,8 @@ def start(player_1=0, player_2=1):
             # do the move
             if good:
                 return str(i + 1)
+            print(f"print avail'{avail}'")
+
         else:
             return -1
 
@@ -169,6 +173,7 @@ def start(player_1=0, player_2=1):
 
     # Main loop and check win
     while not has_won(b1.board) and 10 in b1.move_list:
+        print(f"print move list '{b1.move_list}'")
         whosturn = ''
         if b1.is_x_turn:
             whosturn = 'X'
@@ -177,6 +182,7 @@ def start(player_1=0, player_2=1):
 
         # Player 1
         if b1.is_x_turn:
+            hi2 = b1.valid_move_list()
             if player_1 == 0:
                 # Prompts Player 1 for their move
                 var1 = input(f"It's {whosturn}'s turn. \nEnter your move here: ")
@@ -184,8 +190,7 @@ def start(player_1=0, player_2=1):
                 var1 = random.randint(0, 9)
                 var1 = str(var1)
             elif player_1 == 3:
-                hi = b1.valid_move_list()
-                gold = best_move(hi, b1.board, 'X')
+                gold = best_move(hi2, b1.board, 'X')
                 if gold != -1:
                     var1 = str(gold)
                 else:
@@ -207,7 +212,7 @@ def start(player_1=0, player_2=1):
                 b1.display_board()
         # Player 2
         elif not b1.is_x_turn:
-
+            hi = b1.valid_move_list()
             if player_2 == 0:
                 # Prompts Player 2 for their move
                 var2 = input(f"It's {whosturn}'s turn. \nEnter your move here: ")
@@ -215,7 +220,7 @@ def start(player_1=0, player_2=1):
                 # Computer plays random move
                 var2 = str(random.randint(0, 9))
             elif player_2 == 3:
-                hi = b1.valid_move_list()
+
                 gold = best_move(hi, b1.board, 'O')
                 if gold != -1:
                     var2 = gold
