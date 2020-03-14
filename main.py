@@ -2,56 +2,40 @@
 import random
 
 
-# TODO Add move blocking for AI
+# TODO Add stats for every game
+# todo i don't need to remake a new class every time?
+# todo Add animation for the greeting?
+# todo refactor all weak variables
 
 
 # Start game
-def start(player_1=0, player_2=1):
+def start(player_1=0, player_2=1, other=False):
     def has_won(list_grid):
         """Checks if Cols, Rows or Diagonal is occupied by either a X or an O
         :param list_grid type list
         :returns if there is a win and who won :return bool"""
         # TODO Try and reduce func
-        # Check Cols X
-        if list_grid[0] == "X" and list_grid[1] == "X" and list_grid[2] == "X":
-            return True, True
-        elif list_grid[3] == "X" and list_grid[4] == "X" and list_grid[5] == "X":
-            return True, True
-        elif list_grid[6] == "X" and list_grid[7] == "X" and list_grid[8] == "X":
-            return True, True
-        # Check Cols O
-        elif list_grid[0] == "O" and list_grid[1] == "O" and list_grid[2] == "O":
-            return True, False
-        elif list_grid[3] == "O" and list_grid[4] == "O" and list_grid[5] == "O":
-            return True, False
-        elif list_grid[6] == "O" and list_grid[7] == "O" and list_grid[8] == "O":
-            return True, False
-
-        # Check Rows X
-        elif list_grid[6] == "X" and list_grid[3] == "X" and list_grid[0] == "X":
-            return True, True
-        elif list_grid[7] == "X" and list_grid[4] == "X" and list_grid[1] == "X":
-            return True, True
-        elif list_grid[8] == "X" and list_grid[5] == "X" and list_grid[2] == "X":
-            return True, True
-        # Check Rows O
-        elif list_grid[6] == "O" and list_grid[3] == "O" and list_grid[0] == "O":
-            return True, False
-        elif list_grid[7] == "O" and list_grid[4] == "O" and list_grid[1] == "O":
-            return True, False
-        elif list_grid[8] == "O" and list_grid[5] == "O" and list_grid[2] == "O":
-            return True, False
-
-        # Check Diagonals X
-        elif list_grid[0] == "X" and list_grid[4] == "X" and list_grid[8] == "X":
-            return True, True
-        elif list_grid[2] == "X" and list_grid[4] == "X" and list_grid[6] == "X":
-            return True, True
-        # Check Diagonals O
-        elif list_grid[0] == "O" and list_grid[4] == "O" and list_grid[8] == "O":
-            return True, False
-        elif list_grid[2] == "O" and list_grid[4] == "O" and list_grid[6] == "O":
-            return True, False
+        x_o = ["X", "O"]
+        for i in x_o:
+            # Check Cols
+            if list_grid[0] == i and list_grid[1] == i and list_grid[2] == i:
+                return True
+            elif list_grid[3] == i and list_grid[4] == i and list_grid[5] == i:
+                return True
+            elif list_grid[6] == i and list_grid[7] == i and list_grid[8] == i:
+                return True
+            # Check Rows
+            elif list_grid[6] == i and list_grid[3] == i and list_grid[0] == i:
+                return True
+            elif list_grid[7] == i and list_grid[4] == i and list_grid[1] == i:
+                return True
+            elif list_grid[8] == i and list_grid[5] == i and list_grid[2] == i:
+                return True
+            # Check Diagonals
+            elif list_grid[0] == i and list_grid[4] == i and list_grid[8] == i:
+                return True
+            elif list_grid[2] == i and list_grid[4] == i and list_grid[6] == i:
+                return True
 
     # create board object
     class Hashtag:
@@ -111,22 +95,23 @@ def start(player_1=0, player_2=1):
 
         def display_board(self):
             return print(f"""
-             {self.board[0]} | {self.board[1]} | {self.board[2]} 
+             {self.board[6]} | {self.board[7]} | {self.board[8]} 
             -----------
              {self.board[3]} | {self.board[4]} | {self.board[5]} 
             -----------
-             {self.board[6]} | {self.board[7]} | {self.board[8]} \n\n""")
+             {self.board[0]} | {self.board[1]} | {self.board[2]} \n\n""")
 
         @staticmethod
         def example_board():
+            # Do I need to print this every time?
             """Prints a board and tells user the number layout"""
             return print(f"""
     The number corresponds to the position for the move.
-             {1} | {2} | {3} 
+             {7} | {8} | {9}   
             -----------
              {4} | {5} | {6} 
             -----------
-             {7} | {8} | {9} """)
+             {1} | {2} | {3}""")
 
         def is_it_x_turn(self):
             return print(self.is_x_turn)
@@ -138,8 +123,9 @@ def start(player_1=0, player_2=1):
 
     # Setup
     b1 = Hashtag(is_x_turn=True)
-    b2 = Hashtag()
-    b2.example_board()
+
+    if not other:
+        b1.example_board()
 
     # make available list
     def best_move(avail, board_li, who):
@@ -149,31 +135,35 @@ def start(player_1=0, player_2=1):
         :param avail: all the available positions to play
         :param who: str either X or O
         """
-        print(f"print avail'{avail}'")
 
         for i in avail:
             new_board = board_li[:]
             new_board[i] = who
+            # if the move won when passed in the func, it returned True
             good = has_won(new_board)
-            # do the move
             if good:
+                # it returns the move
                 return str(i + 1)
-            print(f"print avail'{avail}'")
-
         else:
-            return -1
-
-    #         The stop move func
-
-    # b2.display_board()
-
-    # Available spaces list
-    # ip all moves from list and check if each produces a win
-    # and if true return move
+            # The stop move func
+            if who == 'X':
+                who = 'O'
+            elif who == 'O':
+                who = 'X'
+                # Available spaces list
+                # Ip all moves from list and check if each produces a win
+                # and if true return move
+            for i in avail:
+                new_board = board_li[:]
+                new_board[i] = who
+                baby = has_won(new_board)
+                if baby:
+                    return str(i + 1)
+            else:
+                return -1
 
     # Main loop and check win
     while not has_won(b1.board) and 10 in b1.move_list:
-        print(f"print move list '{b1.move_list}'")
         whosturn = ''
         if b1.is_x_turn:
             whosturn = 'X'
@@ -197,6 +187,8 @@ def start(player_1=0, player_2=1):
                     var1 = str(random.randint(0, 9))
             else:
                 var1 = '0'
+            if var1 == 'quit':
+                quit()
             # checks if the move if valid and if not loop input until valid
             while not var1.isdecimal():
                 if player_1 == 0:
@@ -204,6 +196,7 @@ def start(player_1=0, player_2=1):
                 elif player_1 == 1:
                     var1 = random.randint(0, 9)
                     var1 = str(var1)
+
             var1 = int(var1)
             if 1 <= var1 <= 9:
                 var1 -= 1
@@ -229,6 +222,8 @@ def start(player_1=0, player_2=1):
             else:
                 var2 = '0'
 
+            if var2 == 'quit':
+                quit()
             # check if the move if valid and if not loop input until valid
             while not var2.isdecimal():
                 if player_2 == 0:
@@ -276,24 +271,25 @@ def init_func_game(other=False):
 
     def start_mode(mode):
         # 0:Human 1:Comp Rand 3:Comp AI
-        if mode == '1':
-            start(0, 3)
+        if mode == '1' \
+                :
+            start(0, 3, other)
         elif mode == '2':
-            start(0, 1)
+            start(0, 1, other)
         elif mode == '3':
-            start(0, 0)
+            start(0, 0, other)
         elif mode == '4':
-            start(3, 0)
+            start(3, 0, other)
         elif mode == '5':
-            start(1, 0)
+            start(1, 0, other)
         elif mode == '6':
-            start(1, 3)
+            start(1, 3, other)
         elif mode == '7':
-            start(3, 1)
+            start(3, 1, other)
         elif mode == '8':
-            start(3, 3)
+            start(3, 3, other)
         elif mode == '9':
-            start(1, 1)
+            start(1, 1, other)
 
     if not other:
         # ask user if they want to play again: later
@@ -310,6 +306,7 @@ def init_func_game(other=False):
         elif init_the_game == 'n' or init_the_game == 'no' or init_the_game == 'quit' \
                 or init_the_game == 'nope' or init_the_game[0] == 'n':
             quit()
+        print("\nNew Game\n")
         start_mode(thnx)
 
 
