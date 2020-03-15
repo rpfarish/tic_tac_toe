@@ -1,41 +1,55 @@
-# Imports the random module
 import random
-
-
-# TODO Add stats for every game
+# 15 puzzle
+# TODO add timed version
+# TODO Add stats for every game and print who won to a text file?
 # todo i don't need to remake a new class every time?
 # todo Add animation for the greeting?
 # todo refactor all weak variables
+x_wins = 0
+o_wins = 0
+xo_ties = 0
+game_mode = 0
+scores = {
+    'X': 10,
+    'O': -10,
+    'tie': 0
+}
 
 
 # Start game
 def start(player_1=0, player_2=1, other=False):
-    def has_won(list_grid):
+    global x_wins
+    global o_wins
+    global xo_ties
+
+    def has_won(list_grid, move_list=None):
         """Checks if Cols, Rows or Diagonal is occupied by either a X or an O
         :param list_grid type list
         :returns if there is a win and who won :return bool"""
-        # TODO Try and reduce func
         x_o = ["X", "O"]
         for i in x_o:
             # Check Cols
             if list_grid[0] == i and list_grid[1] == i and list_grid[2] == i:
-                return True
+                return True, i
             elif list_grid[3] == i and list_grid[4] == i and list_grid[5] == i:
-                return True
+                return True, i
             elif list_grid[6] == i and list_grid[7] == i and list_grid[8] == i:
-                return True
+                return True, i
             # Check Rows
             elif list_grid[6] == i and list_grid[3] == i and list_grid[0] == i:
-                return True
+                return True, i
             elif list_grid[7] == i and list_grid[4] == i and list_grid[1] == i:
-                return True
+                return True, i
             elif list_grid[8] == i and list_grid[5] == i and list_grid[2] == i:
-                return True
+                return True, i
             # Check Diagonals
             elif list_grid[0] == i and list_grid[4] == i and list_grid[8] == i:
-                return True
+                return True, i
             elif list_grid[2] == i and list_grid[4] == i and list_grid[6] == i:
-                return True
+                return True, i
+        else:
+            if '10' not in move_list:
+                return 'tie'
 
     # create board object
     class Hashtag:
@@ -74,7 +88,7 @@ def start(player_1=0, player_2=1, other=False):
 
         def valid_move_list(self):
             """:param self.move_list
-            :returns valid_li, list of open/valid moves"""
+            :returns valid_li: list of open/valid moves"""
             valid_li = []
             # loops for then length of num list
             for i in range(len(self.move_list)):
@@ -103,7 +117,6 @@ def start(player_1=0, player_2=1, other=False):
 
         @staticmethod
         def example_board():
-            # Do I need to print this every time?
             """Prints a board and tells user the number layout"""
             return print(f"""
     The number corresponds to the position for the move.
@@ -112,9 +125,6 @@ def start(player_1=0, player_2=1, other=False):
              {4} | {5} | {6} 
             -----------
              {1} | {2} | {3}""")
-
-        def is_it_x_turn(self):
-            return print(self.is_x_turn)
 
         def take_turn(self):
             self.is_x_turn = not self.is_x_turn
@@ -126,6 +136,43 @@ def start(player_1=0, player_2=1, other=False):
 
     if not other:
         b1.example_board()
+
+    # ---------- optimal move algorithms-----------------
+    def optimal_move(board):
+        global move
+        # AI to make its turn
+        best_score = float("-inf")
+        # Is the spot available?
+        for i in range(len(board)):
+            if board[i] == ' ':
+                board[i] = "X"
+                score = minimax(board, 0, False)
+                board[i] = ' '
+                if score > best_score:
+                    best_score = score
+                    move = i
+        else:
+            b1.write_board(move)
+
+    def minimax(board, depth, is_maximizing):
+        global scores, best_score
+        result = has_won(board, b1.move_list)
+        # fixme == what?
+        if result != 'tie':
+            return scores[result]
+
+        if is_maximizing:
+            best_score = float("-inf")
+            for i in board:
+                # Is the spot available?
+                if board[i] == ' ':
+                    new_board = board[:]
+
+                    score = minimax(new_board, depth + 1, False)
+
+                    best_score = max(score, best_score)
+
+        return best_score
 
     # make available list
     def best_move(avail, board_li, who):
@@ -140,7 +187,7 @@ def start(player_1=0, player_2=1, other=False):
             new_board = board_li[:]
             new_board[i] = who
             # if the move won when passed in the func, it returned True
-            good = has_won(new_board)
+            good = has_won(new_board, b1.move_list)
             if good:
                 # it returns the move
                 return str(i + 1)
@@ -150,32 +197,30 @@ def start(player_1=0, player_2=1, other=False):
                 who = 'O'
             elif who == 'O':
                 who = 'X'
-                # Available spaces list
-                # Ip all moves from list and check if each produces a win
-                # and if true return move
+                # Ip all avail moves and if any produces a win for the other player
+                # return move
             for i in avail:
                 new_board = board_li[:]
                 new_board[i] = who
-                baby = has_won(new_board)
+                baby = has_won(new_board, b1.move_list)
                 if baby:
                     return str(i + 1)
             else:
                 return -1
 
-    # Main loop and check win
-    while not has_won(b1.board) and 10 in b1.move_list:
-        whosturn = ''
+    # ----------- Main loop -------------------------
+    while not has_won(b1.board, b1.move_list) and 10 in b1.move_list:
+        whose_turn = ''
         if b1.is_x_turn:
-            whosturn = 'X'
+            whose_turn = 'X'
         elif not b1.is_x_turn:
-            whosturn = 'O'
+            whose_turn = 'O'
 
         # Player 1
         if b1.is_x_turn:
             hi2 = b1.valid_move_list()
             if player_1 == 0:
-                # Prompts Player 1 for their move
-                var1 = input(f"It's {whosturn}'s turn. \nEnter your move here: ")
+                var1 = input(f"It's {whose_turn}'s turn. \nEnter your move here: ")
             elif player_1 == 1:
                 var1 = random.randint(0, 9)
                 var1 = str(var1)
@@ -201,14 +246,14 @@ def start(player_1=0, player_2=1, other=False):
             if 1 <= var1 <= 9:
                 var1 -= 1
                 b1.write_board(var1)
-                # Prints board to console
                 b1.display_board()
         # Player 2
         elif not b1.is_x_turn:
             hi = b1.valid_move_list()
             if player_2 == 0:
-                # Prompts Player 2 for their move
-                var2 = input(f"It's {whosturn}'s turn. \nEnter your move here: ")
+                var2 = input(f"It's {whose_turn}'s turn. \nEnter your move here: ")
+                if var2 == 'quit':
+                    quit()
             elif player_2 == 1:
                 # Computer plays random move
                 var2 = str(random.randint(0, 9))
@@ -219,11 +264,11 @@ def start(player_1=0, player_2=1, other=False):
                     var2 = gold
                 else:
                     var2 = str(random.randint(0, 9))
+            elif player_2 == 4:
+                optimal_move(b1.board)
             else:
                 var2 = '0'
 
-            if var2 == 'quit':
-                quit()
             # check if the move if valid and if not loop input until valid
             while not var2.isdecimal():
                 if player_2 == 0:
@@ -238,30 +283,41 @@ def start(player_1=0, player_2=1, other=False):
                 b1.display_board()
 
     # Checks what type the end game was and then prints it
-    if 10 not in b1.move_list and not has_won(b1.board):
+    if 10 not in b1.move_list:
+        xo_ties += 1
         print("it's a tie")
-    #     Print who won to a text file
+        print(f"\tX Wins: {x_wins}\n\tO Wins: {o_wins}\n\tTies: {xo_ties}")
     elif b1.is_x_turn:
+        o_wins += 1
         print("Yay O won!")
+        print(f"\tX Wins: {x_wins}\n\tO Wins: {o_wins}\n\tTies: {xo_ties}")
+
     elif not b1.is_x_turn:
+        x_wins += 1
         print("Yay X won!")
+        print(f"\tX Wins: {x_wins}\n\tO Wins: {o_wins}\n\tTies: {xo_ties}")
 
     init_func_game(True)
 
 
 # TODO choose which player goes first and what piece they are
 def init_func_game(other=False):
-    global thnx
+    global game_mode
+    global x_wins
+    global o_wins
+    global xo_ties
 
-    def ip_func(init_the_game):
-        if init_the_game == '':
+    def ip_func(ip_str):
+        if ip_str == '':
             pass
-        elif init_the_game == 'n' or init_the_game == 'no' or init_the_game == 'quit' \
-                or init_the_game == 'nope' or init_the_game[0] == 'n':
+        elif ip_str == 'n' or ip_str == 'no' or ip_str == 'quit' \
+                or ip_str == 'nope' or ip_str[0] == 'n':
             quit()
-        mode = input("Enter Option Number 1-9:\n\t1:Human vs Computer AI\n"
+        mode = input("Enter Option Number 1-9:\n"
+                     "\t1:Human vs Computer AI\n"
                      "\t2:Human vs Computer Random.\n"
-                     "\t3:Human vs Human\n\t4:Computer AI vs Human\n"
+                     "\t3:Human vs Human\n"
+                     "\t4:Computer AI vs Human\n"
                      "\t5:Computer Random vs Human\n"
                      "\t6:Computer Random vs Computer AI\n"
                      "\t7:Computer AI vs Computer Random\n"
@@ -271,8 +327,7 @@ def init_func_game(other=False):
 
     def start_mode(mode):
         # 0:Human 1:Comp Rand 3:Comp AI
-        if mode == '1' \
-                :
+        if mode == '1':
             start(0, 3, other)
         elif mode == '2':
             start(0, 1, other)
@@ -290,16 +345,15 @@ def init_func_game(other=False):
             start(3, 3, other)
         elif mode == '9':
             start(1, 1, other)
+        elif mode == '0':
+            start(1, 4, other)
 
     if not other:
-        # ask user if they want to play again: later
         init_game = input('Do you want to play a game?\n> ')
         init_game = init_game.lower()
-        thnx = ip_func(init_game)
-        start_mode(thnx)
+        game_mode = ip_func(init_game)
+        start_mode(game_mode)
     if other:
-        # TODO make it remember your mode
-        # ask user if they want to play again: later
         init_the_game = input('Do you want to play again?\n>')
         if init_the_game == '':
             pass
@@ -307,7 +361,8 @@ def init_func_game(other=False):
                 or init_the_game == 'nope' or init_the_game[0] == 'n':
             quit()
         print("\nNew Game\n")
-        start_mode(thnx)
+        start_mode(game_mode)
 
 
-init_func_game()
+if __name__ == "__main__":
+    init_func_game()
