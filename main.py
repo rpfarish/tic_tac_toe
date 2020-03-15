@@ -49,7 +49,7 @@ def start(player_1=0, player_2=1, other=False):
                 return True, i
         else:
             if '10' not in move_list:
-                return 'tie'
+                return False
 
     # create board object
     class Hashtag:
@@ -264,8 +264,8 @@ def start(player_1=0, player_2=1, other=False):
                     var2 = gold
                 else:
                     var2 = str(random.randint(0, 9))
-            elif player_2 == 4:
-                optimal_move(b1.board)
+            # elif player_2 == 4:
+            #     optimal_move(b1.board)
             else:
                 var2 = '0'
 
